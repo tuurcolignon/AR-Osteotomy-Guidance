@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig>
+    <Tracking>
+        <ImageTarget name="CubeMarker.Left" size="0.050000 0.050000"/>
+        <ImageTarget name="CubeMarker.Front" size="0.050000 0.050000"/>
+        <ImageTarget name="CubeMarker.Right" size="0.050000 0.050000"/>
+        <ImageTarget name="CubeMarker.Top" size="0.050000 0.050000"/>
+        <ImageTarget name="CubeMarker.Bottom" size="0.050000 0.050000"/>
+        <ImageTarget name="CubeMarker.Back" size="0.050000 0.050000"/>
+        <MultiTarget name="CubeMarker">
+            <Part name="CubeMarker.Left" translation="-0.02500000037252903 0 0" rotation="AD: 0 1 0 -90"/>
+            <Part name="CubeMarker.Right" translation="0.02500000037252903 0 0" rotation="AD: 0 1 0 90"/>
+            <Part name="CubeMarker.Front" translation="0 0 0.02500000037252903" rotation="AD: 1 0 0 0"/>
+            <Part name="CubeMarker.Back" translation="0 0 -0.02500000037252903" rotation="AD: 0 1 0 180"/>
+            <Part name="CubeMarker.Top" translation="0 0.02500000037252903 0" rotation="AD: 1 0 0 -90"/>
+            <Part name="CubeMarker.Bottom" translation="0 -0.02500000037252903 0" rotation="AD: 1 0 0 90"/>
+        </MultiTarget>
+    </Tracking>
+</QCARConfig>

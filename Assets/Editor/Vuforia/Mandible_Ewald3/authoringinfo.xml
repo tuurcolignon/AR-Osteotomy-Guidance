@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QCARInfo>
+    <TargetSet version="36.0" toolVersion="v7.3.1">
+        <ModelTarget name="Mandible_Ewald1" targetId="635a037f47df4c4fbabd3f3bada48051" version="14.0" toolVersion="v7.3.1" bbox="-0.0577309 -0.0342092 -0.0436269 0.0551725 0.0550469 0.0394758" trackingMode="car" upVector="0.0 1.0 0.0" optimizeTrackingFor="default" realisticTextures="no" />
+    </TargetSet>
+    <Assembly name="Mandible_Ewald1" assemblyId="3cf315a377e6460c8d0f9ecc5c3cf2bd">
+        <Part name="Mandible_Ewald1" translation="0 0 0" rotation="AD: 0 0 1 0" />
+        <EntryPoint name="(none)" trained="yes" />
+    </Assembly>
+</QCARInfo>
