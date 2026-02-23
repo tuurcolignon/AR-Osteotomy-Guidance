@@ -65,8 +65,10 @@ public class AudioController : MonoBehaviour
             }            
             audioSource.mute = false; // Unmute the regular beep sound
             // Closer = shorter interval = faster beeps
-            float beepInterval = Mathf.Lerp(0.3f, 1f, distance / maxDistance);
+            float beepInterval = Mathf.Lerp(0.6f, 2f, distance / maxDistance);
             
+            nextBeepTime = Time.time;
+
             if (Time.time >= nextBeepTime)
             {
                 audioSource.PlayOneShot(audioSource.clip);
