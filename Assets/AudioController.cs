@@ -1,79 +1,73 @@
 using UnityEngine;
 
+/// Drives audio feedback (beeping + success tone) based on alignment data
+/// supplied by AlignmentSensor.
+
+[RequireComponent(typeof(AlignmentSensor))]
 public class AudioController : MonoBehaviour
 {
-    public Transform toolTip; 
-    public Transform targetPlane; 
-    public AudioSource audioSource;
+    [Header("Audio Sources")]
+    public AudioSource beepAudioSource;
+    public AudioSource successAudioSource;
 
-    public AudioSource successAudioSource; // Optional: A separate audio source for continuous success sound
+    [Header("Pitch Mapping")]
+    [Tooltip("Pitch when angle error = 0 (perfect alignment)")]
+    public float pitchAtPerfect = 3.0f;
+    [Tooltip("Pitch when angle error >= maxAngleDeg")]
+    public float pitchAtWorst   = 0.2f;
+    [Tooltip("Angle (deg) at which pitch reaches its lowest value")]
+    public float maxAngleDeg    = 15f;
 
-    
-    [Header("Thresholds")]
-    public float maxDistance = 0.05f; // 5cm active zone
-    public float maxAngleDeg = 30f;   // Angle where pitch hits lowest   
-    
-    private float nextBeepTime;
+    [Header("Tempo Mapping")]
+    public float beepIntervalMin = 0.2f;   // fastest beep (right at the plane)
+    public float beepIntervalMax = 2.0f;   // slowest beep (at edge of active zone)
+
+    [Header("Success Sound")]
+    public float successInterval = 1.0f;
+
+    private AlignmentSensor _sensor;
+    private float _nextBeepTime;
+    private float _nextSuccessTime;
+
+    void Awake()
+    {
+        _sensor = GetComponent<AlignmentSensor>();
+    }
+
     void Update()
     {
-        if (!toolTip || !targetPlane) return;
-
-        // 1. MATH FIX: Perpendicular distance from tool tip to the cutting plane
-        float distance = Mathf.Abs(Vector3.Dot(toolTip.position - targetPlane.position, targetPlane.forward));
-        
-        // Calculate angular deviation of the flat blades
-        float angle = Vector3.Angle(toolTip.forward, targetPlane.forward); 
-
-        // 2. AMPLITUDE: Silence if out of range
-        if (distance > maxDistance)
+        if (!_sensor.IsInActiveZone)
         {
-            audioSource.mute = true;
-            if (successAudioSource.isPlaying)
+            beepAudioSource.mute = true;
+            successAudioSource.Stop();
+            return;
+        }
+
+        if (_sensor.IsSuccess)
+        {
+            beepAudioSource.mute = true;
+
+            if (Time.time >= _nextSuccessTime)
             {
-                successAudioSource.Stop();
+                successAudioSource.PlayOneShot(successAudioSource.clip);
+                _nextSuccessTime = Time.time + successInterval;
             }
             return;
         }
-        audioSource.mute = false;
 
-        // 3. PITCH = ANGLE: 1.0 pitch is perfect. Drops to 0.5 (low pitch) as angle worsens.
-        float normAngle = Mathf.Clamp01(angle / maxAngleDeg);
-        audioSource.pitch = Mathf.Lerp(5.0f, 0.3f, normAngle); 
+        // Regular proximity beep
+        successAudioSource.Stop();
+        beepAudioSource.mute = false;
 
-        // 4. TEMPO = DISTANCE: Geiger counter approach
-        if (distance <= 0.001f && angle < 1f) // Within 1mm of the cut plane and within 1 degree of perfect alignment
+        float normAngle = Mathf.Clamp01(_sensor.AngleDeg / maxAngleDeg);
+        beepAudioSource.pitch = Mathf.Lerp(pitchAtPerfect, pitchAtWorst, normAngle);
+
+        if (Time.time >= _nextBeepTime)
         {
-            if (!successAudioSource.isPlaying)
-            {
-                audioSource.mute = true; // Mute the regular beep sound
-                // Set the exact time gap between success sounds (1.0 = 1 second)
-                float successInterval = 1.0f; 
-                
-                if (Time.time >= nextBeepTime)
-                {
-                    successAudioSource.pitch = 1.2f; // You can also modulate pitch here if desired
-                    successAudioSource.PlayOneShot(successAudioSource.clip);
-                    nextBeepTime = Time.time + successInterval;
-                }
-            }
-        }
-        else
-        {
-            if (successAudioSource.isPlaying)
-            {
-                successAudioSource.Stop();
-            }            
-            audioSource.mute = false; // Unmute the regular beep sound
-            // Closer = shorter interval = faster beeps
-            float beepInterval = Mathf.Lerp(0.6f, 2f, distance / maxDistance);
-            
-            nextBeepTime = Time.time;
-
-            if (Time.time >= nextBeepTime)
-            {
-                audioSource.PlayOneShot(audioSource.clip);
-                nextBeepTime = Time.time + beepInterval;
-            }
+            float t = _sensor.Distance / _sensor.maxFeedbackDistanceM;
+            float beepInterval = Mathf.Lerp(beepIntervalMin, beepIntervalMax, t);
+            beepAudioSource.PlayOneShot(beepAudioSource.clip);
+            _nextBeepTime = Time.time + beepInterval;
         }
     }
 }

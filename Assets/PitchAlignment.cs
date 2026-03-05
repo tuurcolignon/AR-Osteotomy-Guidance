@@ -1,11 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Roll correction arrows – show which way to rotate the blade around its long axis.
-/// Reads RollErrorDeg from AlignmentSensor.
+/// Pitch correction arrows – show which way to rotate the blade around its vertical axis.
+/// Reads PitchErrorDeg from AlignmentSensor.
+///
+/// Note: This script was previously called "YawAlignmentChecker" but computes
+/// pitch error (rotation around sawBlade.up). The class is renamed for clarity.
 /// </summary>
 [RequireComponent(typeof(AlignmentSensor))]
-public class PlanarAlignmentChecker : MonoBehaviour
+public class PitchAlignmentChecker : MonoBehaviour
 {
     [Header("Arrow Renderers")]
     public MeshRenderer arrowLeft;
@@ -16,9 +19,9 @@ public class PlanarAlignmentChecker : MonoBehaviour
     public float maxErrorDeg  = 15f;
 
     [Header("Scale Settings")]
-    public Vector3 alignedScale = new Vector3(0.5f,  0.5f,  0.5f);
-    public Vector3 warningScale = new Vector3(1.2f,  1.2f,  1.2f);
-    public Vector3 maxScale     = new Vector3(2.5f,  2.5f,  2.5f);
+    public Vector3 alignedScale = new Vector3(0.5f, 0.5f, 0.5f);
+    public Vector3 warningScale = new Vector3(1.2f, 1.2f, 1.2f);
+    public Vector3 maxScale     = new Vector3(2.5f, 2.5f, 2.5f);
 
     private static readonly Color Success      = Color.green;
     private static readonly Color WarningStart = new Color(1f, 0.5f, 0f, 1f);
@@ -30,7 +33,7 @@ public class PlanarAlignmentChecker : MonoBehaviour
 
     void Update()
     {
-        float error    = _sensor.RollErrorDeg;
+        float error    = _sensor.PitchErrorDeg;
         float absError = Mathf.Abs(error);
 
         Color   activeColor;

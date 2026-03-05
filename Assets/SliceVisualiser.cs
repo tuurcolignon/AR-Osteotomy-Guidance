@@ -22,7 +22,7 @@ public class SliceVisualizer : MonoBehaviour
         // Assuming the blade's local "Up" is the normal vector (perpendicular to surface).
         // If your blade faces forward, change 'up' to 'forward'.
         Vector3 cutNormal = sawBlade.up; 
-        Vector3 cutUp = sawBlade.forward; 
+        Vector3 cutUp = sawBlade.right; 
 
         // We look down the negative normal to see the face
         sliceCamera.transform.rotation = Quaternion.LookRotation(-cutNormal, cutUp);
